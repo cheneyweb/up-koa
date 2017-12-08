@@ -1,5 +1,5 @@
 {
-  "name": "xup-koa",
+  "name": "up-koa",
   "hooks": {
     "build": "make"
   },
