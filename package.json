@@ -6,7 +6,7 @@
     "koa": "^2.4.1",
     "koa-body": "^2.5.0",
     "koa-router": "^7.3.0",
-    "koa-xauth": "^0.3.0",
+    "koa-xauth": "^0.5.0",
     "tracer": "^0.8.11"
   },
   "scripts": {

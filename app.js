@@ -18,9 +18,8 @@ const log = require('tracer').colorConsole({ level: config.log.level })
 // 初始化应用服务
 const app = new Koa()
 app.use(koaBody())
-
-// 对路由进行认证初始化
-xauth.init(router, config.auth, (v) => v)
+app.use(xauth(config.auth, (v) => v))
+app.use(router.routes())
 
 // ===== 开始：用户认证中间件例子，‘/auth’已经配置白名单，‘/test’路由受保护 =====
 // 1、模拟用户登录，生成加密TOKEN令牌
@@ -61,7 +60,6 @@ router.get('/dbtest', async function (ctx, next) {
     })
     ctx.body = res
 })
-app.use(router.routes())
 // ===== 结束：用户认证中间件例子，‘/auth’已经配置白名单，‘/test’路由受保护 =====
 
 // 启动应用服务
