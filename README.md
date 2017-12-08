@@ -31,7 +31,7 @@
 
     2、npm install && up
     
-    PS：在AWS控制台上调整由up创建的role的策略,以提供dynamodb等资源的访问权限，若对于AWS或UP的细节不清楚,请移至其官网进一步了解
+    PS：在AWS控制台上调整up创建的role的策略,以提供dynamodb等资源的访问权限,若对AWS或UP的细节不清楚,请移至其官网进一步了解
     
 功能特性
 >
