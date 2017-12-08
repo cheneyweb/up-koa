@@ -1,5 +1,7 @@
 # up-koa
-适用于UP无服务部署的KOA集成版本
+适用于APEX/UP无服务部署的KOA集成版本，基于XServer无服务框架开发
+
+[传送门：XServer官网文档](http://xserver.top)
 
 框架目录结构
 >
