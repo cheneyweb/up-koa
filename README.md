@@ -34,7 +34,7 @@
     
 功能特性
 >
-    1、集成koa服务
+    1、集成koa服务
     2、集成koa-router路由中间件
     3、集成koa-body解析中间件，可解析JSON入参
     4、集成koa-xauth认证中间件，基于jwt令牌身份识别
