@@ -27,10 +27,9 @@
 
 快速上手
 >
-    1、配置./aws/credentials文件，以接入AWS平台
-    2、使用【npm install】后，进一步执行【up】命令部署
-    3、在aws云端控制台上调整由up创建的role的策略，以提供dynamodb等数据库资源的访问权限
-    ps：若是对于AWS或UP的具体开发细节不清楚，请移至其官网进一步了解
+    1、vim ./aws/credentials
+    2、npm install && up
+    PS：在aws云端控制台上调整由up创建的role的策略，以提供dynamodb等数据库资源的访问权限，若是对于AWS或UP的细节不清楚,请移至其官网进一步了解
     
 功能特性
 >
