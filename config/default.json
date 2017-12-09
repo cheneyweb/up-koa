@@ -1,6 +1,9 @@
 {
     "log": {
-        "level": "info"
+        "level": "info",
+        "header": {
+            "loglist": ["token"]
+        }
     },
     "auth": {
         "secret": "cheneyweb",

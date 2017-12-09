@@ -4,20 +4,21 @@ const { PORT = 3000 } = process.env
 // 应用服务相关
 const Koa = require('koa')
 const koaBody = require('koa-body')
-const jwt = require('jsonwebtoken')
 const xauth = require('koa-xauth')
+const xlog = require('koa-xlog')
+const jwt = require('jsonwebtoken')
 // 路由相关
 const Router = require('koa-router')
 const router = new Router()
 // 持久层相关
 const BaseModel = require('./model/BaseModel')
-
 // 日志相关
 const log = require('tracer').colorConsole({ level: config.log.level })
 
 // 初始化应用服务
 const app = new Koa()
 app.use(koaBody())
+app.use(xlog(config.log, (ctx) => { log.info('异步日志处理', ctx.request.body) }))
 app.use(xauth(config.auth, (v) => v))
 app.use(router.routes())
 
@@ -64,4 +65,4 @@ router.get('/dbtest', async function (ctx, next) {
 
 // 启动应用服务
 app.listen(PORT)
-log.info('已启动')
+log.info(`up-koa服务启动【执行环境:${process.env.NODE_ENV},端口:${PORT}】`)
