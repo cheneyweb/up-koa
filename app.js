@@ -35,7 +35,7 @@ router.use('/auth', function (ctx, next) {
             ctx.body = '用户名或密码错误'
         }
     } catch (error) {
-        console.error(error)
+        log.error(error)
         ctx.body = error
     }
 })
