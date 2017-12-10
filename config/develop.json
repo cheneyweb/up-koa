@@ -5,6 +5,9 @@
             "loglist": ["token"]
         }
     },
+    "error":{
+        "debug": true
+    },
     "auth": {
         "secret": "cheneyweb",
         "pass": [

@@ -4,6 +4,7 @@ const { PORT = 3000 } = process.env
 // 应用服务相关
 const Koa = require('koa')
 const koaBody = require('koa-body')
+const xerror = require('koa-xerror')
 const xauth = require('koa-xauth')
 const xlog = require('koa-xlog')
 const jwt = require('jsonwebtoken')
@@ -15,28 +16,24 @@ const BaseModel = require('./model/BaseModel')
 // 日志相关
 const log = require('tracer').colorConsole({ level: config.log.level })
 
-// 初始化应用服务
+// 初始化应用服务，加载所有中间件
 const app = new Koa()
-app.use(koaBody())
+app.use(xerror(config.error))           // 全局错误捕获中间件，必须第一位使用
+app.use(koaBody())                      // 入参JSON解析中间件
 app.use(xlog(config.log, (ctx) => { log.info('异步日志处理', ctx.request.body) }))
-app.use(xauth(config.auth, (v) => v))
-app.use(router.routes())
+app.use(xauth(config.auth, (v) => v))   // TOKEN身份认证中间件
+app.use(router.routes())                // 路由中间件
 
 // ===== 开始：用户认证中间件例子，‘/auth’已经配置白名单，‘/test’路由受保护 =====
 // 1、模拟用户登录，生成加密TOKEN令牌
 router.use('/auth', function (ctx, next) {
-    try {
-        if (true) { // 判断用户名密码等认证方式，这里默认通过
-            const tokenSign = jwt.sign({ userId: '123', iat: Date.now() }, config.auth.secret)
-            ctx.tokenSign = tokenSign // 向后面的路由传递TOKEN加密令牌
-            next()
-        } else {
-            ctx.status = 401
-            ctx.body = '用户名或密码错误'
-        }
-    } catch (error) {
-        log.error(error)
-        ctx.body = error
+    if (true) { // 判断用户名密码等认证方式，这里默认通过
+        const tokenSign = jwt.sign({ userId: '123', iat: Date.now() }, config.auth.secret)
+        ctx.tokenSign = tokenSign // 向后面的路由传递TOKEN加密令牌
+        next()
+    } else {
+        ctx.status = 401
+        ctx.body = '用户名或密码错误'
     }
 })
 // 2、向前端传递TOKEN加密令牌
@@ -51,7 +48,7 @@ router.post('/test', function (ctx, next) {
     ctx.body = ctx.request.body // 获取请求参数
 })
 router.get('/dbtest', async function (ctx, next) {
-    log.info('进入')
+    log.info('开始数据库查询')
     let res = await new BaseModel().isExist({
         TableName: 'ZeusPlatformLog',
         KeyConditionExpression: 'sn = :sn',

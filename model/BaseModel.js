@@ -6,6 +6,16 @@ const _ = require('lodash')
 
 /**
  * 基础数据库操作类
+ * putItem:插入单项
+ * batchWrite:批量插入
+ * updateItem:更新单项
+ * deleteItem:删除单项
+ * isExist:是否存在
+ * queryOnce:单次查询
+ * query:递归查询
+ * scan:递归扫描
+ * page:分页
+ * buildQueryParams:绑定筛选参数
  */
 class BaseModel {
     /**
@@ -29,25 +39,25 @@ class BaseModel {
     }
 
     /**
-     * 更新单项
+     * 插入单项
      * @param {*} item
      */
     putItem(item) {
-        return new Promise((reslove, reject) => {
-            const params = {
-                ...this.params,
-                Item: {
-                    ...this.baseitem,
-                    ...item
-                }
+        // return new Promise((reslove, reject) => {
+        const params = {
+            ...this.params,
+            Item: {
+                ...this.baseitem,
+                ...item
             }
-            this.db$('put', params)
-                .then((res) => {
-                    return reslove(res)
-                }).catch((err) => {
-                    return reslove(err)
-                })
-        })
+        }
+        return this.db$('put', params)
+        // .then((res) => {
+        //     return reslove(res)
+        // }).catch((err) => {
+        //     return reject(err)
+        // })
+        // })
     }
 
     /**
@@ -55,14 +65,14 @@ class BaseModel {
      * @param {*} batch
      */
     batchWrite(batch) {
-        return new Promise((reslove, reject) => {
-            this.db$('batchWrite', batch)
-                .then((res) => {
-                    return reslove(res)
-                }).catch((err) => {
-                    return reslove(err)
-                })
-        })
+        // return new Promise((reslove, reject) => {
+        return this.db$('batchWrite', batch)
+        // .then((res) => {
+        //     return reslove(res)
+        // }).catch((err) => {
+        //     return reject(err)
+        // })
+        // })
     }
 
     /**
@@ -70,18 +80,18 @@ class BaseModel {
      * @param {*} conditions 
      */
     updateItem(conditions) {
-        return new Promise((reslove, reject) => {
-            const params = {
-                ...this.params,
-                ...conditions
-            }
-            this.db$('update', params)
-                .then((res) => {
-                    return reslove(res)
-                }).catch((err) => {
-                    return reslove(err)
-                })
-        })
+        // return new Promise((reslove, reject) => {
+        const params = {
+            ...this.params,
+            ...conditions
+        }
+        return this.db$('update', params)
+        // .then((res) => {
+        //     return reslove(res)
+        // }).catch((err) => {
+        //     return reject(err)
+        // })
+        // })
     }
 
     /**
@@ -89,18 +99,19 @@ class BaseModel {
      * @param {*} conditions 
      */
     deleteItem(conditions) {
-        return new Promise((reslove, reject) => {
-            const params = {
-                ...this.params,
-                ...conditions
-            }
-            this.db$('delete', params)
-                .then((res) => {
-                    return reslove(res)
-                }).catch((err) => {
-                    return reslove(err)
-                })
-        })
+        // return new Promise((reslove, reject) => {
+        const params = {
+            ...this.params,
+            ...conditions
+        }
+        return this.db$('delete', params)
+        // .then((res) => {
+        //     return reslove(res)
+        // }).catch((err) => {
+        //     console.error(err)
+        //     return reject(err)
+        // })
+        // })
     }
 
     /**
@@ -113,12 +124,12 @@ class BaseModel {
                 ...this.params,
                 ...conditions
             }
-            this.db$('query', params)
+            return this.db$('query', params)
                 .then((res) => {
                     const exist = res ? true : false
                     return reslove(exist)
                 }).catch((err) => {
-                    return reslove(err)
+                    return reject(err)
                 })
         })
     }
@@ -128,18 +139,18 @@ class BaseModel {
      * @param {*} conditions 
      */
     queryOnce(conditions = {}) {
-        return new Promise((reslove, reject) => {
-            const params = {
-                ...this.params,
-                ...conditions
-            }
-            this.db$('query', params)
-                .then((res) => {
-                    return reslove([0, res])
-                }).catch((err) => {
-                    return reslove([BizErr.DBErr(err.toString()), false])
-                })
-        })
+        // return new Promise((reslove, reject) => {
+        const params = {
+            ...this.params,
+            ...conditions
+        }
+        return this.db$('query', params)
+        // .then((res) => {
+        //     return reslove(res)
+        // }).catch((err) => {
+        //     return reject(err)
+        // })
+        // })
     }
 
     /**
@@ -165,10 +176,10 @@ class BaseModel {
                 params.ExclusiveStartKey = res.LastEvaluatedKey
                 return this.queryInc(params, result)
             } else {
-                return [false, result]
+                return result
             }
         }).catch((err) => {
-            return [BizErr.DBErr(err.toString()), false]
+            return err
         })
     }
 
@@ -195,11 +206,10 @@ class BaseModel {
                 params.ExclusiveStartKey = res.LastEvaluatedKey
                 return this.scanInc(params, result)
             } else {
-                return [false, result]
+                return result
             }
         }).catch((err) => {
-            console.error(err)
-            return [BizErr.DBErr(err.toString()), false]
+            return err
         })
     }
 
@@ -210,15 +220,11 @@ class BaseModel {
      */
     async page(query, inparam) {
         let pageData = { Items: [], LastEvaluatedKey: {} }
-        let [err, ret] = [0, 0]
         while (pageData.Items.length < inparam.pageSize && pageData.LastEvaluatedKey) {
-            [err, ret] = await this.queryOnce({
+            let ret = await this.queryOnce({
                 ...query,
                 ExclusiveStartKey: inparam.startKey
             })
-            if (err) {
-                return [err, 0]
-            }
             // 追加数据
             if (pageData.Items.length > 0) {
                 pageData.Items.push(...ret.Items)
@@ -233,7 +239,7 @@ class BaseModel {
             pageData.Items = _.slice(pageData.Items, 0, inparam.pageSize)
             pageData.LastEvaluatedKey = _.pick(pageData.Items[pageData.Items.length - 1], inparam.LastEvaluatedKeyTemplate)
         }
-        return [err, pageData]
+        return pageData
     }
 
     /**
@@ -316,18 +322,18 @@ class BaseModel {
 // 私有日期格式化方法
 Date.prototype.Format = function (fmt) {
     var o = {
-      "M+": this.getMonth() + 1, //月份 
-      "d+": this.getDate(), //日 
-      "h+": this.getHours(), //小时 
-      "m+": this.getMinutes(), //分 
-      "s+": this.getSeconds(), //秒 
-      "q+": Math.floor((this.getMonth() + 3) / 3), //季度 
-      "S": this.getMilliseconds() //毫秒 
+        "M+": this.getMonth() + 1, //月份 
+        "d+": this.getDate(), //日 
+        "h+": this.getHours(), //小时 
+        "m+": this.getMinutes(), //分 
+        "s+": this.getSeconds(), //秒 
+        "q+": Math.floor((this.getMonth() + 3) / 3), //季度 
+        "S": this.getMilliseconds() //毫秒 
     };
     if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
     for (var k in o)
-      if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+        if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
     return fmt;
-  }
+}
 
 module.exports = BaseModel

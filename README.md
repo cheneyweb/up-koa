@@ -36,13 +36,14 @@
 功能特性
 >
     1、集成koa服务
-    2、集成koa-router路由中间件
-    3、集成koa-body解析中间件，可解析JSON入参
-    4、集成koa-xauth认证中间件，基于jwt令牌身份识别
-    5、集成koa-xlog日志中间件，异步日志处理
-    6、集成config配置，配置文件位于/config目录
-    7、集成dynamodb操作基类，位于/model目录
-    8、集成node8运行环境构建，ES7代码，部署后可兼容AWS的Lambda运行时(Node V6.1.0)
+    2、集成koa-xerror全局错误捕获中间件
+    3、集成koa-router路由中间件
+    4、集成koa-body解析中间件，可解析JSON入参
+    5、集成koa-xauth认证中间件，基于jwt令牌身份识别
+    6、集成koa-xlog日志中间件，异步日志处理
+    7、集成config配置，配置文件位于/config目录
+    8、集成dynamodb操作基类，位于/model目录
+    9、集成node8运行环境构建，ES7代码，部署后可兼容AWS的Lambda运行时(Node V6.1.0)
 
 帮助联系
 >
@@ -53,4 +54,5 @@
 更新日志
 >
 	2017.12.08:初版
-    2017.12.08:集成koa-xlog日志中间件
+    2017.12.09:集成koa-xlog日志中间件
+    2017.12.10:集成koa-xerror全局错误捕获中间件
