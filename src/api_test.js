@@ -33,6 +33,7 @@ router.get('/test', function (ctx, next) {
 router.post('/test', function (ctx, next) {
     ctx.body = ctx.request.body // 获取请求参数
 })
+// 普通数据库查询
 router.get('/dbtest', async function (ctx, next) {
     log.info('开始数据库查询')
     let res = await new BaseModel().isExist({
@@ -42,6 +43,29 @@ router.get('/dbtest', async function (ctx, next) {
             ':sn': '161f385d-c212-4f10-b5c7-4e4cd35597b9'
         }
     })
+    ctx.body = res
+})
+// 分页数据库查询
+router.get('/pagetest', async function (ctx, next) {
+    let inparam = {
+        role: '1',
+        page: {
+            limit: 1000,
+            startKey: null,
+            lastEvaluatedKeyTemplate: ['createdAt', 'role', 'sn', 'userId']
+        }
+    }
+    let res = await new BaseModel().page({
+        TableName: 'ZeusPlatformLog',
+        IndexName: 'LogRoleIndex',
+        KeyConditionExpression: '#role = :role',
+        ExpressionAttributeNames: {
+            '#role': 'role'
+        },
+        ExpressionAttributeValues: {
+            ':role': inparam.role
+        }
+    }, inparam.page)
     ctx.body = res
 })
 // ===== 结束：用户认证中间件例子，‘/auth’已经配置白名单，‘/test’路由受保护 =====

@@ -1,7 +1,5 @@
 const AWS = require('aws-sdk')
 AWS.config.update({ region: 'ap-southeast-1' })
-// AWS.config.setPromisesDependency(require('bluebird'))
-const dbClient = new AWS.DynamoDB.DocumentClient()
 const _ = require('lodash')
 
 /**
@@ -25,7 +23,8 @@ class BaseModel {
         this.baseitem = {
             createdAt: Date.now(),
             updatedAt: Date.now(),
-            createdDate: new Date().Format("yyyy-MM-dd")
+            createdDate: new Date().Format("yyyy-MM-dd"),
+            createdTime: new Date().Format("hh:mm:ss")
         }
     }
 
@@ -35,7 +34,7 @@ class BaseModel {
      * @param {*} params 
      */
     db$(action, params) {
-        return dbClient[action](params).promise()
+        return new AWS.DynamoDB.DocumentClient()[action](params).promise()
     }
 
     /**
@@ -216,29 +215,38 @@ class BaseModel {
     /**
      * 分页查询
      * @param {*} query 
-     * @param {*} inparam (pageSize,startKey)
+     * @param {*} inparam (limit,startKey)
      */
     async page(query, inparam) {
+        // 初始化返回数据
         let pageData = { Items: [], LastEvaluatedKey: {} }
-        while (pageData.Items.length < inparam.pageSize && pageData.LastEvaluatedKey) {
+        // 查询数量不足且数据库仍有数据，则继续循环查询
+        while (pageData.Items.length < inparam.limit && pageData.LastEvaluatedKey) {
             let ret = await this.queryOnce({
                 ...query,
+                Limit: inparam.limit,
                 ExclusiveStartKey: inparam.startKey
             })
             // 追加数据
             if (pageData.Items.length > 0) {
                 pageData.Items.push(...ret.Items)
-                pageData.LastEvaluatedKey = ret.LastEvaluatedKey
             } else {
                 pageData = ret
             }
+            // 更新最后一条键值
+            pageData.LastEvaluatedKey = ret.LastEvaluatedKey
+            // 更新起始KEY
             inparam.startKey = ret.LastEvaluatedKey
+            // 需要查询的数量减少
+            inparam.limit -= ret.Items.length
         }
+        // 最后查询键
+        pageData.LastEvaluatedKey = _.pick(pageData.Items[pageData.Items.length - 1], inparam.lastEvaluatedKeyTemplate)
         // 最后数据超过指定长度，则截取指定长度
-        if (pageData.Items.length > inparam.pageSize) {
-            pageData.Items = _.slice(pageData.Items, 0, inparam.pageSize)
-            pageData.LastEvaluatedKey = _.pick(pageData.Items[pageData.Items.length - 1], inparam.LastEvaluatedKeyTemplate)
-        }
+        // if (pageData.Items.length > inparam.limit) {
+        //     pageData.Items = _.slice(pageData.Items, 0, inparam.limit)
+        //     pageData.LastEvaluatedKey = _.pick(pageData.Items[pageData.Items.length - 1], inparam.LastEvaluatedKeyTemplate)
+        // }
         return pageData
     }
 
