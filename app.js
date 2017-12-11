@@ -10,7 +10,8 @@ const xlog = require('koa-xlog')
 // 日志相关
 const log = require('tracer').colorConsole({ level: config.log.level })
 // 业务控制器
-const testrouter = require('./src/api_test')
+const authtestrouter = require('./src/api_authtest')
+const dbtestrouter = require('./src/api_dbtest')
 
 // 初始化应用服务，加载所有中间件
 const app = new Koa()
@@ -18,7 +19,8 @@ app.use(xerror(config.error))           // 全局错误捕获中间件，必须�
 app.use(koaBody())                      // 入参JSON解析中间件
 app.use(xlog(config.log, (ctx) => { log.info('异步日志处理', ctx.request.body) }))    //日志中间件，参数1：日志配置，参数2：额外日志处理
 app.use(xauth(config.auth, (v) => v))   // TOKEN身份认证中间件，，参数1：认证配置，参数2：额外自定义TOKEN解析规则
-app.use(testrouter.routes())            // 业务路由中间件
+app.use(authtestrouter.routes())        // 业务路由中间件
+app.use(dbtestrouter.routes())          // 业务路由中间件
 
 // 启动应用服务
 app.listen(PORT)

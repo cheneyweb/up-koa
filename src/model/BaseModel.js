@@ -1,6 +1,7 @@
 const AWS = require('aws-sdk')
 AWS.config.update({ region: 'ap-southeast-1' })
 const _ = require('lodash')
+const dbClient = new AWS.DynamoDB.DocumentClient()
 
 /**
  * 基础数据库操作类
@@ -34,7 +35,7 @@ class BaseModel {
      * @param {*} params 
      */
     db$(action, params) {
-        return new AWS.DynamoDB.DocumentClient()[action](params).promise()
+        return dbClient[action](params).promise()
     }
 
     /**
@@ -251,11 +252,15 @@ class BaseModel {
     }
 
     /**
-     * 构建搜索条件
+     * 绑定筛选条件
+     * @param {*} oldquery 原始查询对象
      * @param {*} conditions 查询条件对象
      * @param {*} isDefault 是否默认全模糊搜索
      */
-    buildQueryParams(conditions = {}, isDefault) {
+    bindFilterParams(oldquery = {}, conditions = {}, isDefault) {
+        if (_.isEmpty(oldquery) || _.isEmpty(conditions)) {
+            return
+        }
         // 默认设置搜索条件，所有查询模糊匹配
         if (isDefault) {
             for (let key in conditions) {
@@ -323,6 +328,16 @@ class BaseModel {
             }
             if (index != keys.length - 1) opts.FilterExpression += " and "
         })
+
+        // 绑定筛选至原来的查询对象
+        if (oldquery.FilterExpression) {
+            oldquery.FilterExpression += (' AND ' + opts.FilterExpression)
+        } else {
+            oldquery.FilterExpression = opts.FilterExpression
+        }
+        oldquery.ExpressionAttributeNames = { ...oldquery.ExpressionAttributeNames, ...opts.ExpressionAttributeNames }
+        oldquery.ExpressionAttributeValues = { ...oldquery.ExpressionAttributeValues, ...opts.ExpressionAttributeValues }
+
         return opts
     }
 }

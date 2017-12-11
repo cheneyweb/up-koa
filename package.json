@@ -9,6 +9,7 @@
     "koa-xauth": "^0.5.0",
     "koa-xerror": "^0.1.0",
     "koa-xlog": "^0.2.0",
+    "lodash": "^4.17.4",
     "tracer": "^0.8.11"
   },
   "scripts": {
