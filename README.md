@@ -5,19 +5,21 @@
 
 框架目录结构
 >
-    ├── Makefile
-    ├── app.js
-    ├── config
+    ├── Makefile                构建NODE8编码文件
+    ├── app.js                  应用入口
+    ├── config                  系统配置
     │   ├── default.json
     │   ├── develop.json
     │   └── production.json
-    ├── model
-    │   └── BaseModel.js
-    ├── node-v8.4.0-linux-x64
-    ├── node_modules
+    ├── node-v8.4.0-linux-x64   NODE8源码
+    ├── node_modules            外部模块
     ├── package.json
-    ├── up.json
-    └── webpack.config.js（尚未使用打包，仅存留）
+    ├── src                     应用源码
+    │   ├── api_authtest.js     业务控制器
+    │   ├── api_dbtest.js       业务控制器
+    │   └── model               业务模型
+    ├── up.json                 UP配置
+    └── webpack.config.js（尚未使用打包功能，仅存留）
 
 预置安装
 >
@@ -57,3 +59,4 @@
     2017.12.09:集成koa-xlog日志中间件
     2017.12.10:集成koa-xerror全局错误捕获中间件，优化代码目录组织，业务代码集中放置于src/
     2017.12.11:更新BaseModel数据库操作基类
+    2017.12.12:更新koa-xauth认证中间件，增加角色路由保护

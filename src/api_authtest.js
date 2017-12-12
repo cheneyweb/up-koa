@@ -5,12 +5,12 @@ const Router = require('koa-router')
 const router = new Router()
 // 认证相关
 const jwt = require('jsonwebtoken')
-// 持久层相关
-const BaseModel = require('./model/BaseModel')
 // 工具相关
 const _ = require('lodash')
 // 日志相关
 const log = require('tracer').colorConsole({ level: config.log.level })
+// 持久层相关
+const BaseModel = require('./model/BaseModel')
 
 /**
  * 用户认证中间件例子，‘/auth’已经配置白名单，‘/test’路由受保护
@@ -39,6 +39,17 @@ router.get('/test', function (ctx, next) {
 })
 router.post('/test', function (ctx, next) {
     ctx.body = ctx.request.body
+})
+
+// 路由角色控制
+router.get('/financial/test1', async function (ctx, next) {
+    ctx.body = ctx.tokenVerify
+})
+router.post('/financial/test1', async function (ctx, next) {
+    ctx.body = ctx.tokenVerify
+})
+router.get('/financial/test2', async function (ctx, next) {
+    ctx.body = ctx.tokenVerify
 })
 
 module.exports = router

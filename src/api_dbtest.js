@@ -5,12 +5,12 @@ const Router = require('koa-router')
 const router = new Router()
 // 认证相关
 const jwt = require('jsonwebtoken')
-// 持久层相关
-const BaseModel = require('./model/BaseModel')
 // 工具相关
 const _ = require('lodash')
 // 日志相关
 const log = require('tracer').colorConsole({ level: config.log.level })
+// 持久层相关
+const BaseModel = require('./model/BaseModel')
 
 // 普通数据库查询
 router.get('/dbtest', async function (ctx, next) {
