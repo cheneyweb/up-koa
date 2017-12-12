@@ -16,10 +16,10 @@ const BaseModel = require('./model/BaseModel')
  * 用户认证中间件例子，‘/auth’已经配置白名单，‘/test’路由受保护
  */
 
- // 1、模拟用户登录，生成加密TOKEN令牌
+// 1、模拟用户登录，生成加密TOKEN令牌
 router.use('/auth', function (ctx, next) {
     if (true) {
-        const tokenSign = jwt.sign({ userId: '123', iat: Date.now() }, config.auth.secret)
+        const tokenSign = jwt.sign({ userId: '123', role: 'admin', iat: Date.now() }, config.auth.secret)
         ctx.tokenSign = tokenSign   // 向后面的路由传递TOKEN加密令牌
         next()
     } else {
