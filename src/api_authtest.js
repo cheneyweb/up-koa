@@ -19,7 +19,8 @@ const BaseModel = require('./model/BaseModel')
 // 1、模拟用户登录，生成加密TOKEN令牌
 router.use('/auth', function (ctx, next) {
     if (true) {
-        const tokenSign = jwt.sign({ userId: '123', role: 'admin', iat: Date.now() }, config.auth.secret)
+        const user = { userId: '123', role: 'admin' }
+        const tokenSign = jwt.sign({ ...user, iat: Date.now(), exp: Math.floor(Date.now() / 1000) + (60 * 60 * 24) }, config.auth.secret)
         ctx.tokenSign = tokenSign   // 向后面的路由传递TOKEN加密令牌
         next()
     } else {
