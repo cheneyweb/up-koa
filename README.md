@@ -14,7 +14,7 @@
     ├── node-v8.4.0-linux-x64   NODE8源码
     ├── node_modules            外部模块
     ├── package.json
-    ├── src                     应用源码
+    ├── src                     应用源码（编码工作区）
     │   ├── api_authtest.js     业务控制器
     │   ├── api_dbtest.js       业务控制器
     │   └── model               业务模型
@@ -41,11 +41,11 @@
     2、集成koa-xerror全局错误捕获中间件
     3、集成koa-router路由中间件
     4、集成koa-body解析中间件，可解析JSON入参
-    5、集成koa-xauth认证中间件，基于jwt令牌身份识别
+    5、集成koa-xauth认证中间件，基于jwt令牌身份识别和拓展角色身份识别
     6、集成koa-xlog日志中间件，异步日志处理
     7、集成config配置，配置文件位于/config目录
-    8、集成dynamodb操作基类，位于/model目录
-    9、集成node8运行环境构建，ES7代码，部署后可兼容AWS的Lambda运行时(Node V6.1.0)
+    8、集成dynamodb操作基类，位于/src/model目录
+    9、集成node8运行环境构建，ES7代码，部署后可兼容AWS的Lambda运行时(Node v6.1.0)
 
 帮助联系
 >
