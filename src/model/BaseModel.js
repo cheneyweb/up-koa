@@ -252,12 +252,12 @@ class BaseModel {
     }
 
     /**
-     * 绑定筛选条件
+     * 绑定筛选条件后查询
      * @param {*} oldquery 原始查询对象
      * @param {*} conditions 查询条件对象
      * @param {*} isDefault 是否默认全模糊搜索
      */
-    bindFilterParams(oldquery = {}, conditions = {}, isDefault) {
+    bindFilterQuery(oldquery = {}, conditions = {}, isDefault) {
         if (_.isEmpty(oldquery) || _.isEmpty(conditions)) {
             return
         }
@@ -338,7 +338,8 @@ class BaseModel {
         oldquery.ExpressionAttributeNames = { ...oldquery.ExpressionAttributeNames, ...opts.ExpressionAttributeNames }
         oldquery.ExpressionAttributeValues = { ...oldquery.ExpressionAttributeValues, ...opts.ExpressionAttributeValues }
 
-        return opts
+        // 返回绑定筛选参数后的查询
+        return this.query(oldquery)
     }
 }
 
