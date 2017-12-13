@@ -14,7 +14,8 @@ const dbClient = new AWS.DynamoDB.DocumentClient()
  * query:递归查询
  * scan:递归扫描
  * page:分页
- * buildQueryParams:绑定筛选参数
+ * bindFilterQuery:绑定筛选参数并查询
+ * bindFilterScan:绑定筛选参数并扫描
  */
 class BaseModel {
     /**
@@ -258,8 +259,11 @@ class BaseModel {
      * @param {*} isDefault 是否默认全模糊搜索
      */
     bindFilterQuery(oldquery = {}, conditions = {}, isDefault) {
-        if (_.isEmpty(oldquery) || _.isEmpty(conditions)) {
+        if (_.isEmpty(oldquery)) {
             return
+        }
+        if (_.isEmpty(conditions)) {
+            return self.query(oldquery)
         }
         // 默认设置搜索条件，所有查询模糊匹配
         if (isDefault) {
@@ -278,9 +282,10 @@ class BaseModel {
         keys.forEach((k, index) => {
             let item = conditions[k]
             let value = item, array = false
+            // 属性对应的值是数组，则直接用范围筛选
             if (_.isArray(item)) {
-                opts.FilterExpression += `${k} between :${k}0 and :${k}1`
-                // opts.FilterExpression += `${k} > :${k}0 and ${k} < :${k}1`
+                opts.ExpressionAttributeNames[`#${k}`] = k
+                opts.FilterExpression += `#${k} between :${k}0 and :${k}1`
                 opts.ExpressionAttributeValues[`:${k}0`] = item[0]
                 opts.ExpressionAttributeValues[`:${k}1`] = item[1]// + 86399999
             }
@@ -340,6 +345,97 @@ class BaseModel {
 
         // 返回绑定筛选参数后的查询
         return this.query(oldquery)
+    }
+
+    /**
+     * 绑定筛选条件后扫描
+     * @param {*} oldquery 原始查询对象
+     * @param {*} conditions 查询条件对象
+     * @param {*} isDefault 是否默认全模糊搜索
+     */
+    bindFilterScan(oldquery = {}, conditions = {}, isDefault) {
+        if (_.isEmpty(conditions)) {
+            return self.scan(oldquery)
+        }
+        // 默认设置搜索条件，所有查询模糊匹配
+        if (isDefault) {
+            for (let key in conditions) {
+                if (!_.isArray(conditions[key])) {
+                    conditions[key] = { '$like': conditions[key] }
+                }
+            }
+        }
+        let keys = Object.keys(conditions), opts = {}
+        if (keys.length > 0) {
+            opts.FilterExpression = ''
+            opts.ExpressionAttributeValues = {}
+            opts.ExpressionAttributeNames = {}
+        }
+        keys.forEach((k, index) => {
+            let item = conditions[k]
+            let value = item, array = false
+            if (_.isArray(item)) {
+                opts.ExpressionAttributeNames[`#${k}`] = k
+                opts.FilterExpression += `#${k} between :${k}0 and :${k}1`
+                opts.ExpressionAttributeValues[`:${k}0`] = item[0]
+                opts.ExpressionAttributeValues[`:${k}1`] = item[1]// + 86399999
+            }
+            else if (Object.is(typeof item, "object")) {
+                for (let key in item) {
+                    value = item[key]
+                    switch (key) {
+                        case "$like": {
+                            opts.FilterExpression += `contains(#${k}, :${k})`
+                            break
+                        }
+                        case "$in": {
+                            array = true
+                            opts.ExpressionAttributeNames[`#${k}`] = k
+                            for (let i = 0; i < value.length; i++) {
+                                if (i == 0) opts.FilterExpression += "("
+                                opts.FilterExpression += `#${k} = :${k}${i}`
+                                if (i != value.length - 1) {
+                                    opts.FilterExpression += " or "
+                                }
+                                if (i == value.length - 1) {
+                                    opts.FilterExpression += ")"
+                                }
+                                opts.ExpressionAttributeValues[`:${k}${i}`] = value[i]
+                            }
+                            break
+                        }
+                        case "$range": {
+                            array = true
+                            opts.ExpressionAttributeNames[`#${k}`] = k
+                            opts.FilterExpression += `#${k} between :${k}0 and :${k}1`
+                            opts.ExpressionAttributeValues[`:${k}0`] = value[0]
+                            opts.ExpressionAttributeValues[`:${k}1`] = value[1]
+                            break
+                        }
+                    }
+                    break
+                }
+            } else {
+                opts.FilterExpression += `#${k} = :${k}`
+            }
+            if (!array && !_.isArray(value)) {
+                opts.ExpressionAttributeValues[`:${k}`] = value
+                opts.ExpressionAttributeNames[`#${k}`] = k
+            }
+            if (index != keys.length - 1) opts.FilterExpression += " and "
+        })
+
+        // 绑定筛选至原来的查询对象
+        if (oldquery.FilterExpression) {
+            oldquery.FilterExpression += (' AND ' + opts.FilterExpression)
+        } else {
+            oldquery.FilterExpression = opts.FilterExpression
+        }
+        oldquery.ExpressionAttributeNames = { ...oldquery.ExpressionAttributeNames, ...opts.ExpressionAttributeNames }
+        oldquery.ExpressionAttributeValues = { ...oldquery.ExpressionAttributeValues, ...opts.ExpressionAttributeValues }
+
+        // 返回绑定筛选参数后的筛选
+        return this.scan(oldquery)
     }
 }
 
