@@ -136,6 +136,25 @@ class BaseModel {
     }
 
     /**
+     * 主键获取
+     * @param {*} conditions 
+     */
+    getItem(conditions = {}) {
+        // return new Promise((reslove, reject) => {
+        const params = {
+            ...this.params,
+            ...conditions
+        }
+        return this.db$('get', params)
+        // .then((res) => {
+        //     return reslove(res)
+        // }).catch((err) => {
+        //     return reject(err)
+        // })
+        // })
+    }
+
+    /**
      * 单次查询
      * @param {*} conditions 
      */
