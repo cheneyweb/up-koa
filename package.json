@@ -7,7 +7,7 @@
     "koa-body": "^2.5.0",
     "koa-router": "^7.3.0",
     "koa-xauth": "^0.6.0",
-    "koa-xerror": "^0.2.0",
+    "koa-xerror": "^0.3.0",
     "koa-xlog": "^0.2.0",
     "lodash": "^4.17.4",
     "tracer": "^0.8.11"
