@@ -127,7 +127,7 @@ class BaseModel {
             }
             return this.db$('query', params)
                 .then((res) => {
-                    const exist = res ? true : false
+                    const exist = res.Items.length > 0 ? true : false
                     return reslove(exist)
                 }).catch((err) => {
                     return reject(err)
