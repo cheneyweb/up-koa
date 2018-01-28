@@ -1,3 +1,4 @@
 node_modules
 node-v8.9.3-linux-x64
 package-lock.json
+/package-lock.json
