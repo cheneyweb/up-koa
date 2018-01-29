@@ -1,5 +1,5 @@
 {
-  "name": "uo-koa",
+  "name": "up-koa",
   "version": "1.0.0",
   "description": "适用于APEX/UP无服务部署的KOA集成版本，基于XServer无服务框架开发",
   "main": "app.js",
