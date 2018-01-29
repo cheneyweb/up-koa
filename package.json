@@ -1,4 +1,14 @@
 {
+  "name": "uo-koa",
+  "version": "1.0.0",
+  "description": "适用于APEX/UP无服务部署的KOA集成版本，基于XServer无服务框架开发",
+  "main": "app.js",
+  "scripts": {
+    "build": "webpack --config webpack.config.js",
+    "start": "node app"
+  },
+  "author": "cheneyxu",
+  "license": "ISC",
   "dependencies": {
     "aws-sdk": "^2.188.0",
     "config": "^1.29.2",
@@ -6,15 +16,11 @@
     "koa": "^2.4.1",
     "koa-body": "^2.5.0",
     "koa-router": "^7.3.0",
-    "koa-xauth": "^0.8.0",
-    "koa-xerror": "^0.3.0",
-    "koa-xlog": "^0.2.0",
+    "koa-xauth": "^0.9.0",
+    "koa-xerror": "^0.9.0",
+    "koa-xlog": "^0.9.0",
     "lodash": "^4.17.4",
     "tracer": "^0.8.11"
-  },
-  "scripts": {
-    "build": "webpack --config webpack.config.js",
-    "start": "node app"
   },
   "devDependencies": {
     "babel-core": "^6.26.0",
