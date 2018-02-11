@@ -66,14 +66,32 @@ class BaseModel {
      * @param {*} batch
      */
     batchWrite(batch) {
-        // return new Promise((reslove, reject) => {
         return this.db$('batchWrite', batch)
-        // .then((res) => {
-        //     return reslove(res)
-        // }).catch((err) => {
-        //     return reject(err)
-        // })
-        // })
+            .then((res) => {
+                if (res.UnprocessedItems && !_.isEmpty(res.UnprocessedItems)) {
+                    console.log('发生批量写入未完成事件')
+                    // 遍历每个表
+                    for (let tablename in res.UnprocessedItems) {
+                        console.log(`表【${tablename}】未完成写入数据量:${res.UnprocessedItems[tablename].length}`)
+                        // 初始化批量写入对象
+                        let batch = {
+                            RequestItems: {}
+                        }
+                        batch.RequestItems[tablename] = []
+                        // 遍历每个表的每条数据
+                        for (let item of res.UnprocessedItems[tablename]) {
+                            batch.RequestItems[tablename].push(item)
+                        }
+                        // 重新插入
+                        console.log(`表【${tablename}】重新写入数据量:${batch.RequestItems[tablename].length}`)
+                        return this.batchWrite(batch)
+                    }
+                } else {
+                    return res
+                }
+            }).catch((err) => {
+                console.log(err)
+            })
     }
 
     /**
