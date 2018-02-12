@@ -1,3 +1,2 @@
 *.lock
 *.md
-!node-v8.9.3-linux-x64
