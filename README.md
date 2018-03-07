@@ -67,3 +67,4 @@
     2018.01.29:更新koa-xlog/koa-xerror/koa-xauth中间件
     2018.02.11:更新BaseModel数据库操作基类，批量插入支持递归插入失败数据
     2018.02.12:升级node环境为8.9.4
+    2018.03.07:更新koa-xauth和koa-xerror
