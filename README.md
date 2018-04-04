@@ -5,13 +5,11 @@
 
 框架目录结构
 >
-    ├── Makefile                构建NODE8编码文件
     ├── app.js                  应用入口
     ├── config                  系统配置
     │   ├── default.json
     │   ├── develop.json
     │   └── production.json
-    ├── node-v8.4.0-linux-x64   NODE8源码
     ├── node_modules            外部模块
     ├── package.json
     ├── src                     应用源码（编码工作区）
@@ -68,3 +66,4 @@
     2018.02.11:更新BaseModel数据库操作基类，批量插入支持递归插入失败数据
     2018.02.12:升级node环境为8.9.4
     2018.03.07:更新koa-xauth和koa-xerror
+    2018.04.04:原生支持node8.10环境
