@@ -16,8 +16,7 @@
     │   ├── api_authtest.js     业务控制器
     │   ├── api_dbtest.js       业务控制器
     │   └── model               业务模型
-    ├── up.json                 UP配置
-    └── webpack.config.js（尚未使用打包功能，仅存留）
+    └── up.json                 UP配置
 
 预置安装
 >
@@ -43,7 +42,7 @@
     6、集成koa-xlog日志中间件，异步日志处理
     7、集成config配置，配置文件位于/config目录
     8、集成dynamodb操作基类，位于/src/model目录
-    9、集成node8运行环境构建，ES7代码，部署后可兼容AWS的Lambda运行时(Node v6.1.0)
+    9、集成node8运行环境构建，ES7代码，部署后可兼容AWS的Lambda运行时(Node v8.10.0)
 
 帮助联系
 >
