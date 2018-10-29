@@ -9,16 +9,16 @@
   "author": "cheneyxu",
   "license": "ISC",
   "dependencies": {
-    "aws-sdk": "^2.334.0",
+    "aws-sdk": "^2.344.0",
     "config": "^2.0.1",
     "jsonwebtoken": "^8.3.0",
-    "koa": "^2.5.3",
+    "koa": "^2.6.1",
     "koa-body": "^4.0.4",
     "koa-router": "^7.4.0",
-    "koa-xauth": "^1.0.0",
-    "koa-xerror": "^1.0.0",
-    "koa-xlog": "^1.0.0",
+    "koa-xauth": "^1.1.0",
+    "koa-xerror": "^1.1.0",
+    "koa-xlog": "^1.1.0",
     "lodash": "^4.17.11",
-    "tracer": "^0.9.1"
+    "tracer": "^0.9.2"
   }
 }
